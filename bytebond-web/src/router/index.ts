@@ -17,6 +17,11 @@ const routes = [
     name: 'trade',
     component: () => import(/* webpackChunkName: "home" */ '@/views/Trade.vue'),
   },
+  {
+    path: '/paperTrade',
+    name: 'paperTrade',
+    component: () => import(/* webpackChunkName: "home" */ '@/views/Demo.vue'),
+  },
 ]
 
 const router = createRouter({

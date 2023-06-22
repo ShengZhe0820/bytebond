@@ -45,9 +45,22 @@
     </v-row>
 
   </v-container>
+  <v-card>
+    <v-card-title>
+      <v-row>
+        Your Profit this Month: 100 USDT
+      </v-row>
+      <v-row>
+        Profit Target: 500 USDT
+      </v-row>
+      <v-row>
+        Remaining Day(s): 20
+      </v-row>
+    </v-card-title>
+  </v-card>
 </template>
 
-<script>
+<script lang="ts">
 export default {
   name: "Trade",
   setup() {
