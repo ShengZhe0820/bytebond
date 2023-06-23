@@ -40,10 +40,10 @@ async function environmentSetup() {
         //Set the contract ID to return the request for
         .setContractId(SAUCER_ROUTER_CONTRACT)
         //Set the contract function to call
-        .setFunction("quote", new ContractFunctionParameters()
+        .setFunction("getAmountIn", new ContractFunctionParameters()
             .addUint256(10)
-            .addUint256(100)
-            .addUint256(100))
+            .addUint256(1000)
+            .addUint256(1000))
         //Set the query payment for the node returning the request
         //This value must cover the cost of the request otherwise will fail
         .setQueryPayment(new Hbar(2));
@@ -53,7 +53,7 @@ async function environmentSetup() {
 
     const amountIn = response.getUint104(0);
 
-    console.log(`Amount In: ${amountIn}`);
+    console.log(`Amount Out: ${amountIn}`);
 
 
 }

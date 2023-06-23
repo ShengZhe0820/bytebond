@@ -10,7 +10,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@hashgraph/hethers": "^1.2.6",
     "@hashgraph/sdk": "^2.26.0",
-    "dotenv": "^16.1.4"
+    "@uniswap/sdk": "^3.0.3",
+    "bignumber.js": "^9.1.1",
+    "dotenv": "^16.1.4",
+    "ethers": "^6.6.0"
   }
 }
