@@ -33,7 +33,6 @@ export const useWalletStore = defineStore('wallet', {
       }
       this.hashConnect = new HashConnect();
       this.initData = await this.hashConnect.init(appMetadata, "testnet", false)
-      console.log(this.initData)
       if ('savedPairings' in this.initData && this.initData['savedPairings'].length > 0) {
         this.setAcc(this.initData['savedPairings'][0])
       }
