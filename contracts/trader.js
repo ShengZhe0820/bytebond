@@ -2,15 +2,15 @@ const { Client,
     AccountId,
     PrivateKey,
     ContractId,
-    AccountCreateTransaction,
-    AccountBalanceQuery,
     Hbar,
-    TransferTransaction,
     ContractCallQuery,
     ContractInfoQuery,
     ContractFunctionParameters,
     ContractCreateFlow,
-    TokenId } = require("@hashgraph/sdk");
+    TokenId,
+    AccountAllowanceApproveTransaction,
+    TokenAssociateTransaction,
+    AccountCreateTransaction } = require("@hashgraph/sdk");
 require("dotenv").config();
 const { contractExecuteNoFcn, contractCallQueryFcn, contractExecuteFcn, swapTokens } = require('./helper_function/helper');
 
@@ -32,67 +32,159 @@ async function main() {
 
     //Set the default maximum transaction fee (in Hbar)
     client.setDefaultMaxTransactionFee(new Hbar(100));
-    client.setMaxQueryPayment(new Hbar(2));
+    client.setMaxQueryPayment(new Hbar(20));
 
-    let gasLimit = 1000000;
+    ///////////////Create Treasury account////////////////////////////////
+    // const treasuryKey = PrivateKey.generateED25519();
+    // const treasuryAccount = new AccountCreateTransaction()
+    //     .setKey(treasuryKey)
+    //     .setInitialBalance(new Hbar(10))
+    //     .setAccountMemo("treasury account");
+
+    // const submitAccountCreateTx = await treasuryAccount.execute(client);
+    // const newAccountReceipt = await submitAccountCreateTx.getReceipt(client);
+    // const treasuryAccountId = newAccountReceipt.accountId;
+    // console.log("The new account ID is " + treasuryAccountId);
+
+    let gasLimit = 10000000;
+
     // ///////////////////// Deploy Contract /////////////////////////////////////////////////////
 
     // //Import the compiled contract from the HelloHedera.json file
-    // let fundedTrader = require("./contract_json/fundedTrader.json")
-    // const bytecode = fundedTrader.data.bytecode.object;
+    let fundedTrader = require("./contract_json/fundedTrader.json")
+    const bytecode = fundedTrader.data.bytecode.object;
 
-    // //Import Saucerswap Router Contract
-    // const ssRouterId = ContractId.fromString(process.env.SAUCER_ROUTER_CONTRACT);
+    //Create the transaction
+    const contractCreate = new ContractCreateFlow()
+        .setGas(gasLimit)
+        .setBytecode(bytecode);
 
-    // //Create the transaction
-    // const contractCreate = new ContractCreateFlow()
-    //     .setGas(gasLimit)
-    //     .setBytecode(bytecode)
-    //     .setConstructorParameters(
-    //         new ContractFunctionParameters()
-    //             .addAddress(myAccountId.toSolidityAddress())
-    //             .addAddress(ssRouterId.toSolidityAddress()))
-    //     ;
+    //Sign the transaction with the client operator key and submit to a Hedera network
+    const txResponse = contractCreate.execute(client);
 
-    // //Sign the transaction with the client operator key and submit to a Hedera network
-    // const txResponse = contractCreate.execute(client);
+    //Get the receipt of the transaction
+    const receipt = (await txResponse).getReceipt(client);
 
-    // //Get the receipt of the transaction
-    // const receipt = (await txResponse).getReceipt(client);
-
-    // //Get the new contract ID
-    // const newContractId = (await receipt).contractId;
-    // console.log("The new contract ID is " + newContractId);
+    //Get the new contract ID
+    const newContractId = (await receipt).contractId;
+    console.log("The new contract ID is " + newContractId);
 
     // ///////////////////////////Deposit Fund to Contract/////////////////////////////////////////////////////////
-    const newContractId = ContractId.fromString("0.0.14961733");
-    // let payableAmt = 10;
-    // const deposit = await contractExecuteNoFcn(client, newContractId, gasLimit, payableAmt);
-    // console.log("The deposit status is " + deposit.status.toString());
 
-    // //Query Contract Balance
+    //const newContractId = ContractId.fromString("0.0.14972249");
+    // Associate Contract with WHBAR
+    const whbarId = TokenId.fromString(process.env.WHBAR_TOKEN_ID);
+    let params = new ContractFunctionParameters()
+        .addAddress(myAccountId.toSolidityAddress())
+        .addAddress(whbarId.toSolidityAddress());
+    const associateWHBarTx = await contractExecuteFcn(
+        client,
+        newContractId,
+        gasLimit,
+        "token_associate",
+        params,
+    )
+    console.log("Token Association status: " + associateWHBarTx.status.toString());
+
+    // Mint WHBAR using hbar 
+    const whbarContractId = ContractId.fromString(process.env.WHBAR_TOKEN_CONTRACT);
+    let payableAmt = 10;
+    // params = new ContractFunctionParameters()
+    //     .addAddress(myAccountId.toSolidityAddress())
+    //     .addAddress(newContractId.toSolidityAddress());
+    params = null;
+    const depositTx = await contractExecuteFcn(
+        client,
+        whbarContractId,
+        gasLimit,
+        "deposit",
+        params,
+        payableAmt
+    );
+    console.log("Deposit status: " + depositTx.status.toString());
+
+    // // //Query Contract Balance
     // const getBalance = await contractCallQueryFcn(client, newContractId, gasLimit, "get_balance");
     // const balance = getBalance.getUint256(0);
     // console.log("The balance is: " + balance);
 
+    // Associate Contract with saucer
+    const saucerId = TokenId.fromString(process.env.SAUCER_TOKEN_ID);
+    params = new ContractFunctionParameters()
+        .addAddress(myAccountId.toSolidityAddress())
+        .addAddress(saucerId.toSolidityAddress());
+    const associateSaucerTx = await contractExecuteFcn(
+        client,
+        newContractId,
+        gasLimit,
+        "token_associate",
+        params,
+    )
+    console.log("Token Association status: " + associateSaucerTx.status.toString());
+
+    //allow Saucer_Router to access Spending
+    const saucerRouterId = ContractId.fromString(process.env.SAUCER_ROUTER_CONTRACT);
+
     ////////////////////////////// SWAP ///////////////////////////////////////////
-    hederaId = TokenId.fromString(process.env.HEDERA_TOKEN_ID);
-    saucerID = TokenId.fromString(process.env.SAUCER_TOKEN_ID);
+    try {
 
-    const amountIn = 1 * 1e8;
-    const amountOutMin = 125;
-    const path = [hederaId.toSolidityAddress(), saucerID.toSolidityAddress()]; // Replace with the actual path
-    const to = newContractId; // Replace with the actual to address
-    const deadline = Math.floor(Date.now() / 1000) + 60 * 20; // 20 minutes from the current Unix time
-    const params = new ContractFunctionParameters()
-        .addUint256(amountIn)
-        .addUint256(amountOutMin)
-        .addStringArray(path) // Assuming path is an array of string (address)
-        .addAddress(to.toSolidityAddress())
-        .addUint256(deadline);
+        // const amountIn = 1 * 1e8;
+        // const amountOutMin = 0;
 
-    const swapTokensReceipt = await swapTokens(client, newContractId, gasLimit, params);
-    console.log("The swapTokens status is " + swapTokensReceipt.status.toString());
+        // const params = new ContractFunctionParameters()
+        //     .addAddress(whbarId.toSolidityAddress())
+        //     .addAddress(saucerId.toSolidityAddress())
+        //     .addUint256(amountIn)
+        //     .addUint256(amountOutMin);
+
+        // const swapTokensReceipt = await swapTokens(client, newContractId, gasLimit, params);
+        // console.log("The swapTokens status is " + swapTokensReceipt.status.toString());
+
+        const amountIn = 1; // Replace with the actual amountIn
+        const amountOutMin = 0; // Replace with the actual amountOutMin
+        const path = [whbarId.toSolidityAddress(), saucerId.toSolidityAddress()]; // Replace with the actual path
+        const to = myAccountId.toSolidityAddress(); // Replace with the actual to address
+        const deadline = Math.floor(Date.now() / 1000 + 60 * 20); // Replace with the actual deadline
+        const contractExecute = new ContractExecuteTransaction()
+            .setGas(gasLimit)
+            .setContractId(contractId)
+            .setFunction("swapTokens",
+                new ContractFunctionParameters()
+                    .addUint256(amountIn)
+                    .addUint256(amountOutMin)
+                    .addStringArray(path) // Assuming path is an array of string (address)
+                    .addAddress(to)
+                    .addUint256(deadline)
+            );
+
+        const transactionResponse = await contractExecute.execute(client);
+        return transactionResponse.getReceipt(client);
+        console.log("The swapTokens status is " + transactionResponse.status.toString());
+
+    }
+
+
+    // const pool = ContractId.fromString("0.0.3395297");
+    // const amountIn = 1 * 1e8;
+    // const params = new ContractFunctionParameters()
+    //     .addAddress(whbarId.toSolidityAddress())
+    //     .addAddress(pool.toSolidityAddress())
+    //     .addInt64(amountIn);
+
+    // const manualTransfer = await contractExecuteFcn(
+    //     client,
+    //     newContractId,
+    //     gasLimit,
+    //     "manual_transfer",
+    //     params,
+    // )
+    // console.log("The swapTokens status is " + manualTransfer.status.toString());
+    catch (error) {
+        if (error) {
+            let transactionId = error.transactionId;
+            console.log(`Transaction ID: ${transactionId}`);
+        }
+    }
 }
 
 main();
