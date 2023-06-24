@@ -1,5 +1,6 @@
 // Composables
 import {createRouter, createWebHistory} from 'vue-router'
+import * as process from "process";
 
 const routes = [
   {
@@ -33,5 +34,7 @@ const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes,
 })
+
+console.log('ewrfgewfg', process.env.BASE_URL)
 
 export default router
