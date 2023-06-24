@@ -44,6 +44,11 @@
           <v-card-text>
             <v-row>
               <v-col>
+                Account Size: 1000 (USD)
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col>
                 Total Profit: 100 (USD)
               </v-col>
 
@@ -56,12 +61,6 @@
             </v-row>
             <v-row>
               <v-col>Max drawdown: 5%</v-col>
-
-            </v-row>
-            <v-row>
-              <v-col>
-                Total profit: 200 (USD)
-              </v-col>
 
             </v-row>
             <v-row>
@@ -88,6 +87,7 @@ import {storeToRefs} from "pinia";
 import {TraderLevels} from "../../enum";
 import * as net from "net";
 import {TradeRecord} from "../../types";
+import {ref} from "vue";
 
 export default {
   name: "Trade",
@@ -110,29 +110,29 @@ export default {
       "Complete a minimum of 30 trading days. (20/30)",
       "Achieve a positive net profit over the last 30 trading days. (5/30)"
     ]
-    const tokens = ['HBAR', 'SAUCE', 'CLXY', 'HST', 'LUCKY']
-    const demoRecords: TradeRecord[] = [
+    const demoRecords = ref<TradeRecord[]>([
       {
         id: '1',
         fSym: 'HBAR',
         tSym: 'SAUCE',
-        amt: 0.01,
-        date: '2023-06-24 01:04:52'
+        amt: 1867,
+        date: '2023-06-24T14:50:31.232Z'
       },
       {
         id: '2',
         fSym: 'CLXY',
         tSym: 'HBAR',
-        amt: 0.01,
-        date: '2023-06-24 01:04:52'
+        amt: 64322,
+        date: '2023-06-24T14:51:11.321Z'
       }, {
         id: '3',
-        fSym: 'USDC',
-        tSym: 'BTC',
-        amt: 0.01,
-        date: '2023-06-24 01:04:52'
+        fSym: 'SAUCE',
+        tSym: 'HST',
+        amt: 143123,
+        date: '2023-06-24T14:53:32.222Z'
       }
-    ]
+    ]);
+
     return {accLevel, nextLevel, levelUpCheckList, demoRecords}
   }
 }

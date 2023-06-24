@@ -23,6 +23,7 @@
 import {useAppStore} from "@/store/app";
 import {storeToRefs} from "pinia";
 import {AgreementStatus} from "../../enum";
+import {useWalletStore} from "@/store/wallet";
 
 export default {
   name: "dashboard",
@@ -68,10 +69,13 @@ export default {
         key: 'actions',
       }
     ];
-    const store = useAppStore()
-    const {agreements} = storeToRefs(store);
+    const appStore = useAppStore()
+    const {agreements} = storeToRefs(appStore);
+    const walletStore = useWalletStore();
     const deleteTrader = (trader) => {
-      store.terminateTrader(trader)
+      walletStore.submitTransaction().then(() => {
+        appStore.terminateTrader(trader)
+      })
     }
     return {headers, agreements, deleteTrader}
   },

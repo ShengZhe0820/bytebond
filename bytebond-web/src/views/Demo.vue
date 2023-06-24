@@ -42,21 +42,49 @@
       <v-divider></v-divider>
       <v-card-text>
         <v-list-item
-          v-for="(item, i) in requirementCheckList"
-          :key="i"
           density="compact"
         >
           <v-checkbox
             density="compact"
             hide-details
             disabled
-            :label="item"
+            :label=r1
+          ></v-checkbox>
+        </v-list-item>
+        <v-list-item
+          density="compact"
+        >
+          <v-checkbox
+            density="compact"
+            hide-details
+            disabled
+            label="Demonstrate consistent profitability month over month. (0/3)"
+          ></v-checkbox>
+        </v-list-item>
+        <v-list-item
+          density="compact"
+        >
+          <v-checkbox
+            density="compact"
+            hide-details
+            disabled
+            label="Maintain a maximum drawdown of less than 10%. (0/3)"
+          ></v-checkbox>
+        </v-list-item>
+        <v-list-item
+          density="compact"
+        >
+          <v-checkbox
+            density="compact"
+            hide-details
+            disabled
+            label="Diversify your trades across 5 asset classes. (0/5)"
           ></v-checkbox>
         </v-list-item>
       </v-card-text>
     </v-card>
     <div class="mt-4">
-      <Swap/>
+      <Swap :records="demoRecords"/>
     </div>
 
   </div>
@@ -65,9 +93,10 @@
 <script lang="ts">
 import {useAppStore} from "@/store/app";
 import {storeToRefs} from "pinia";
-import {AccStatus, TraderStatus} from "../../enum";
+import {AccStatus} from "../../enum";
 import Swap from "@/components/Swap.vue";
-import {Evaluation_Requirement} from "../../data";
+import {computed, ref} from "vue";
+import {TradeRecord} from "../../types";
 
 export default {
   name: "Demo",
@@ -75,18 +104,25 @@ export default {
   computed: {
     AccStatus() {
       return AccStatus
-    }
+    },
   },
 
   setup() {
     const app = useAppStore()
     const {accStatus} = storeToRefs(app)
-    const requirementCheckList = Evaluation_Requirement
-
+    const demoRecords = ref<TradeRecord[]>([]);
     const startEvaluation = () => {
       app.changeAccStatus(AccStatus.EVALUATING)
     }
-    return {accStatus, startEvaluation, requirementCheckList}
+
+    const numberOfTrade = computed(() => {
+      return demoRecords.value.length
+    });
+    const r1 = computed(() => {
+      return `Execute a minimum of 50 trades. (${numberOfTrade.value}/50)`
+    });
+
+    return {accStatus, startEvaluation, r1, demoRecords}
   }
 }
 

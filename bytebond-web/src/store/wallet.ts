@@ -1,5 +1,7 @@
 import {defineStore} from "pinia";
 import {HashConnect, HashConnectTypes, MessageTypes} from 'hashconnect';
+import {FileCreateTransaction} from "@hashgraph/sdk";
+
 global = globalThis
 
 interface State {
@@ -50,6 +52,17 @@ export const useWalletStore = defineStore('wallet', {
 
     async connectWallet() {
       this.hashConnect.connectToLocalWallet();
+    },
+
+    async submitTransaction() {
+      const provider = this.hashConnect.getProvider(this.pairingData.network, this.pairingData.topic, this.connectedAccount);
+      const signer = this.hashConnect.getSigner(provider);
+
+      // Get contract file
+      const fileCreateTx = new FileCreateTransaction()
+        .freezeWithSigner(signer);
+
+      let res = await (await fileCreateTx).executeWithSigner(signer)
     },
 
     disconnectWallet() {
