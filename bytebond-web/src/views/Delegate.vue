@@ -1,8 +1,9 @@
 <template>
+  <h2>Trader List</h2>
   <v-container class="text-center">
     <v-data-table
       :headers="headers as any"
-      :items="demo_eligible_traders"
+      :items="traders"
       class="elevation-1"
     >
       <template v-slot:item.level="{ item }">
@@ -29,6 +30,9 @@
 import {ref} from "vue";
 import FundTraderDialog from "@/components/FundTraderDialog.vue";
 import {TraderLevels, TraderStatus} from "../../enum";
+import {useAppStore} from "@/store/app";
+import {storeToRefs} from "pinia";
+import {Trader} from "../../types";
 
 export default {
   name: "delegate",
@@ -39,32 +43,6 @@ export default {
   },
   components: {FundTraderDialog},
   setup() {
-    const demo_eligible_traders = ref<any>([
-      {
-        'tA': "0.0.1232478",
-        'level': TraderLevels.ELITE,
-        'roi': "20%",
-        'wR': '50%',
-        'mDD': '20%',
-        'status': TraderStatus.TAKEN
-      },
-      {
-        'tA': "0.0.1459123",
-        'level': TraderLevels.ADVANCED,
-        'roi': "40%",
-        'wR': '45%',
-        'mDD': '10%',
-        'status': TraderStatus.HIRED
-      },
-      {
-        'tA': "0.0.1423428",
-        'level': TraderLevels.NOVICE,
-        'roi': "5%",
-        'wR': '70%',
-        'mDD': '2%',
-        'status': TraderStatus.VERIFIED
-      }
-    ])
     const headers = [
       [
         {
@@ -112,11 +90,11 @@ export default {
       },
       ]
     ];
+    const store = useAppStore()
+    const {traders} = storeToRefs(store);
     const dialog = ref<boolean>(false);
-    let editedIndex = ref<number>(-1);
-    let editedItem = ref<any>({});
+    let editedItem = ref<Trader>({} as Trader);
     const fundTrader = (item: any) => {
-      editedIndex.value = demo_eligible_traders.value.indexOf(item)
       editedItem.value = item
       console.log(editedItem)
       dialog.value = true
@@ -125,10 +103,10 @@ export default {
       dialog.value = false
     };
     const saveFundTrader = () => {
-      editedItem.value.status = TraderStatus.HIRED
+      store.hireTrader(editedItem.value)
       dialog.value = false
     };
-    return {headers, demo_eligible_traders, fundTrader, dialog, editedItem, closeDialog, saveFundTrader}
+    return {headers, traders, fundTrader, dialog, editedItem, closeDialog, saveFundTrader}
   }
 }
 </script>

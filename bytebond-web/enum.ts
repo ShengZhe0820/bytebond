@@ -62,8 +62,13 @@ export const TraderLevels = {
 
 
 export enum TraderStatus {
-    TAKEN = 'Taken',
-    HIRED= 'Hired',
-    VERIFIED = 'Verified'
+  TAKEN = 'Taken',
+  HIRED = 'Hired',
+  VERIFIED = 'Verified'
+}
+
+export enum AgreementStatus {
+  ACTIVE = 'Active',
+  TERMINATED = 'Terminated'
 }
 

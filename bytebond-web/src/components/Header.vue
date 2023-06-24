@@ -10,6 +10,9 @@
     <v-btn @click="$router.push('/trade')">
       Trade
     </v-btn>
+    <v-btn @click="$router.push('/dashboard')">
+      Dashboard
+    </v-btn>
     <v-spacer></v-spacer>
     <v-row justify="end">Total funder's reserves: {{ formattedTotalFunderReserve }}</v-row>
     <div v-if="isReadyToConnect" class="ml-3">
@@ -56,7 +59,7 @@ export default defineComponent({
       setInterval(generateRandomNumber, 1000); // generates a new random number every second
     });
 
-    const formattedTotalFunderReserve = computed(()=> totalFunderReserve.value.toLocaleString())
+    const formattedTotalFunderReserve = computed(() => totalFunderReserve.value.toLocaleString())
     return {connectedAccount, isReadyToConnect, connectWallet, disconnectWallet, formattedTotalFunderReserve}
 
 

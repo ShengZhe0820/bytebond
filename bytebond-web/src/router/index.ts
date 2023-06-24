@@ -22,6 +22,11 @@ const routes = [
     name: 'paperTrade',
     component: () => import(/* webpackChunkName: "home" */ '@/views/Demo.vue'),
   },
+  {
+    path: '/dashboard',
+    name: 'dashboard',
+    component: () => import(/* webpackChunkName: "home" */ '@/views/Dashboard.vue'),
+  },
 ]
 
 const router = createRouter({
