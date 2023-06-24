@@ -68,7 +68,7 @@
 
 </template>
 
-<script>
+<script lang="ts">
 
 import {computed, ref} from "vue";
 import {useWalletStore} from "@/store/wallet";

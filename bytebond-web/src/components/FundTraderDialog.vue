@@ -51,9 +51,7 @@
   </v-dialog>
 </template>
 
-<script>
-
-import {TraderStatus} from "../../enum";
+<script lang="ts">
 
 export default {
   name: "FundTraderDialog",
