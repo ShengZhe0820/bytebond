@@ -53,10 +53,13 @@
 
 <script lang="ts">
 
+import {Trader} from "../../types";
+
 export default {
   name: "FundTraderDialog",
   props: {
     trader: {
+      type: Object as () => Trader,
       required: true,
       default: {},
     },

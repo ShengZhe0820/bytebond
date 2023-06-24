@@ -59,7 +59,7 @@
   <v-card class="mt-2">
     <v-card-title>Trade Records</v-card-title>
     <v-data-table
-      :headers="headers"
+      :headers="headers as any"
       :items="records"
       class="elevation-1"
     >
@@ -77,6 +77,7 @@ export default {
   name: "swap",
   props: {
     records: {
+      type: Array,
       default: [],
     },
   },

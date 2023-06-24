@@ -88,6 +88,8 @@ import {TraderLevels} from "../../enum";
 import * as net from "net";
 import {TradeRecord} from "../../types";
 import {ref} from "vue";
+import {getBindingIdentifiers} from "@babel/types";
+import keys = getBindingIdentifiers.keys;
 
 export default {
   name: "Trade",
@@ -99,11 +101,11 @@ export default {
   },
   setup() {
     const store = useAppStore()
-    const {accLevel}: { TraderLevels } = storeToRefs(store)
-    let nextLevel = TraderLevels.NOVICE
-    Object.keys(TraderLevels).forEach(level => {
-      if (TraderLevels[level].id === (accLevel.id + 1)) {
-        nextLevel = TraderLevels[level]
+    const {accLevel} = storeToRefs(store)
+    let nextLevel: any= TraderLevels.NOVICE
+    Object.keys(TraderLevels).forEach((level: string) => {
+      if (TraderLevels[level as keyof typeof TraderLevels].id === (accLevel.value.id + 1)) {
+        nextLevel = TraderLevels[level as keyof typeof TraderLevels]
       }
     })
     const levelUpCheckList = [

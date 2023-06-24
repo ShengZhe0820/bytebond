@@ -1,7 +1,7 @@
 <template>
   <v-container class="text-center">
     <v-data-table
-      :headers="headers"
+      :headers="headers as any"
       :items="agreements"
       class="elevation-1"
     >
@@ -24,6 +24,7 @@ import {useAppStore} from "@/store/app";
 import {storeToRefs} from "pinia";
 import {AgreementStatus} from "../../enum";
 import {useWalletStore} from "@/store/wallet";
+import {Agreement} from "../../types";
 
 export default {
   name: "dashboard",
@@ -72,7 +73,7 @@ export default {
     const appStore = useAppStore()
     const {agreements} = storeToRefs(appStore);
     const walletStore = useWalletStore();
-    const deleteTrader = (trader) => {
+    const deleteTrader = (trader: Agreement) => {
       walletStore.submitTransaction().then(() => {
         appStore.terminateTrader(trader)
       })

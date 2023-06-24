@@ -8,7 +8,7 @@ interface State {
   agreements: Agreement[];
   traders: Trader[];
   accStatus: AccStatus;
-  accLevel: any;
+  accLevel: typeof TraderLevels.NOVICE;
 }
 
 export const useAppStore = defineStore('app', {
