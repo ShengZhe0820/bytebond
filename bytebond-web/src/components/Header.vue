@@ -2,7 +2,7 @@
   <v-app-bar>
     <h1 class="mx-5" @click="$router.push('/')">BlockTradeLabs</h1>
     <v-btn @click="$router.push('/paperTrade')">
-      Paper Trade
+      Evaluation
     </v-btn>
     <v-btn @click="$router.push('/delegate')">
       Fund
@@ -14,7 +14,11 @@
       Dashboard
     </v-btn>
     <v-spacer></v-spacer>
-    <v-row justify="end">Total funder's reserves: {{ formattedTotalFunderReserve }}</v-row>
+    <v-row justify="end">
+      <v-col cols="auto"  align="right" align-self="end">Total funder's reserves: ${{ formattedTotalFunderReserve }} (USD)</v-col>
+      <v-col cols="auto" align="right" align-self="end" >24hr Volume: ${{ formattedVolume }} (USD)</v-col>
+    </v-row>
+
     <div v-if="isReadyToConnect" class="ml-3">
       <v-btn v-if="!connectedAccount" class="text-none" @click="connectWallet">
         <v-icon color="info">mdi-wallet</v-icon>
@@ -51,16 +55,34 @@ export default defineComponent({
 
     // fake total funder reserve increase
     const totalFunderReserve = ref(1234);
-    const generateRandomNumber = () => {
-      totalFunderReserve.value += Math.floor(Math.random() * 100); // generates a random number between 0 and 99
+    const generateRandomFundIncrease = () => {
+      totalFunderReserve.value += Math.floor(Math.random() * 10000); // generates a random number between 0 and 99
     }
 
     onMounted(() => {
-      setInterval(generateRandomNumber, 1000); // generates a new random number every second
+      setInterval(generateRandomFundIncrease, 1000); // generates a new random number every second
     });
 
     const formattedTotalFunderReserve = computed(() => totalFunderReserve.value.toLocaleString())
-    return {connectedAccount, isReadyToConnect, connectWallet, disconnectWallet, formattedTotalFunderReserve}
+    // fake 24hr volume
+    const volume = ref(23);
+    const generateVolumeIncrease = () => {
+      volume.value += Math.floor(Math.random() * 100); // generates a random number between 0 and 99
+    }
+
+    onMounted(() => {
+      setInterval(generateVolumeIncrease, 1000); // generates a new random number every second
+    });
+
+    const formattedVolume = computed(() => volume.value.toLocaleString())
+    return {
+      connectedAccount,
+      isReadyToConnect,
+      connectWallet,
+      disconnectWallet,
+      formattedTotalFunderReserve,
+      formattedVolume
+    }
 
 
   }

@@ -38,3 +38,10 @@ export const Demo_Agreement = [
     status: AgreementStatus.ACTIVE
   }
 ]
+
+export const Evaluation_Requirement = [
+  "Execute a minimum of 50 trades. (0/50)"
+  , "Demonstrate consistent profitability month over month. (0/3)",
+  "Maintain a maximum drawdown of less than 10%. (0/3)",
+  "Diversify your trades across 5 asset classes. (0/5)"
+]

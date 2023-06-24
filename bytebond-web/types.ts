@@ -26,3 +26,10 @@ export interface Agreement {
   status: AgreementStatus
 }
 
+export interface TradeRecord {
+  id: string,
+  fSym: string,
+  tSym: string,
+  amt: number,
+  date: string
+}

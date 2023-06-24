@@ -1,21 +1,28 @@
 // Utilities
 import {defineStore} from 'pinia'
 import {Agreement, Trader} from "../../types";
-import {AgreementStatus, TraderStatus} from "../../enum";
+import {AccStatus, AgreementStatus, TraderLevels, TraderStatus} from "../../enum";
 import {Demo_Agreement, Demo_Eligible_Trader} from "../../data";
 
 interface State {
   agreements: Agreement[];
-  traders: Trader[]
+  traders: Trader[];
+  accStatus: AccStatus;
+  accLevel: any;
 }
 
 export const useAppStore = defineStore('app', {
   state: (): State => ({
     agreements: [...Demo_Agreement],
-    traders: [...Demo_Eligible_Trader]
+    traders: [...Demo_Eligible_Trader],
+    accStatus: AccStatus.NEW,
+    accLevel: TraderLevels.NOVICE,
   }),
 
   actions: {
+    changeAccStatus(newStatus: AccStatus) {
+      this.accStatus = newStatus
+    },
     hireTrader(trader: Trader) {
       trader.status = TraderStatus.HIRED
       this.agreements.push({

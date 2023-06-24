@@ -29,7 +29,7 @@
 <script lang="ts">
 import {ref} from "vue";
 import FundTraderDialog from "@/components/FundTraderDialog.vue";
-import {TraderLevels, TraderStatus} from "../../enum";
+import {TraderStatus} from "../../enum";
 import {useAppStore} from "@/store/app";
 import {storeToRefs} from "pinia";
 import {Trader} from "../../types";

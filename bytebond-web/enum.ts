@@ -1,15 +1,23 @@
+export enum AccountSize {
+  Novice = 1000,
+  INTERMEDIATE = 5000,
+  ADVANCED = 20000,
+  ELITE = 50000,
+  MASTER = 100000,
+}
+
 export const TraderLevels = {
   NOVICE: {
     id: 1,
     name: 'Novice Trader',
-    accountSize: 1000,
+    accountSize: AccountSize.Novice,
     maximumTotalLoss: 100,
     requirements: []
   },
   INTERMEDIATE: {
     id: 2,
     name: 'Intermediate Trader',
-    'accountSize': 5000,
+    'accountSize': AccountSize.INTERMEDIATE,
     tradingDays: 30,
     maximumTotalLoss: 100,
     requirements: [
@@ -21,7 +29,7 @@ export const TraderLevels = {
   ADVANCED: {
     id: 3,
     name: 'Advanced Trader',
-    'accountSize': 20000,
+    'accountSize': AccountSize.ADVANCED,
     tradingDays: 30,
     maximumTotalLoss: 100,
     requirements: [
@@ -34,7 +42,7 @@ export const TraderLevels = {
   ELITE: {
     id: 4,
     name: 'Elite Trader',
-    'accountSize': 50000,
+    'accountSize': AccountSize.ELITE,
     tradingDays: 30,
     maximumTotalLoss: 100,
     requirements: [
@@ -47,7 +55,7 @@ export const TraderLevels = {
   MASTER: {
     id: 5,
     name: 'Master Trader',
-    'accountSize': 100000,
+    'accountSize': AccountSize.MASTER,
     tradingDays: 30,
     maximumTotalLoss: 100,
     requirements: [
@@ -58,7 +66,13 @@ export const TraderLevels = {
       'Achieve a minimum Sharpe Ratio (a measure of risk-adjusted return) of 1.0.'
     ]
   }
-};
+}
+export enum AccStatus {
+  FUNDER = 'funder',
+  QUALIFIED = 'qualified',
+  EVALUATING = 'evaluation',
+  NEW= 'new'
+}
 
 
 export enum TraderStatus {
@@ -71,4 +85,5 @@ export enum AgreementStatus {
   ACTIVE = 'Active',
   TERMINATED = 'Terminated'
 }
+
 
