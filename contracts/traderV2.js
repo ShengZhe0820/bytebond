@@ -60,7 +60,12 @@ async function main() {
     //Create the transaction
     const contractCreate = new ContractCreateFlow()
         .setGas(gasLimit)
-        .setBytecode(bytecode);
+        .setBytecode(bytecode)
+        .setConstructorParameters(
+            new ContractFunctionParameters()
+                .addAddress(myAccountId.toSolidityAddress())
+                .addAddress(myAccountId.toSolidityAddress())
+        );
 
     //Sign the transaction with the client operator key and submit to a Hedera network
     const txResponse = contractCreate.execute(client);
@@ -125,11 +130,12 @@ async function main() {
         // const signTx = await contractExecute.sign(myPrivateKey);
         // const transactionResponse = await signTx.execute(client);
         // console.log("The swapTokens status is " + transactionResponse.getReceipt(client).status.toString());
-        const pool = ContractId.fromString("0.0.3395297");
+        //const pool = ContractId.fromString("0.0.3395297");
         const amountIn = 1 * 1e8;
+        const payableAmt = 1;
+
         const params = new ContractFunctionParameters()
             .addAddress(whbarId.toSolidityAddress())
-            .addAddress(pool.toSolidityAddress())
             .addInt64(amountIn);
 
         const manualTransfer = await contractExecuteFcn(
@@ -139,6 +145,7 @@ async function main() {
             gasLimit,
             "manual_transfer",
             params,
+            payableAmt
         )
         console.log("The swapTokens status is " + manualTransfer.status.toString());
 
