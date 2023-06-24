@@ -31,7 +31,7 @@ export const Demo_Eligible_Trader = [
 export const Demo_Agreement = [
   {
     'tA': "0.0.1459123",
-    'cA': '0xadkj4kfgoecwes1f',
+    'cA': '0.0.14973822',
     'uPL': "10%",
     'rPL': "15%",
     'nT': 5,

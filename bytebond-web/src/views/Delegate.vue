@@ -7,24 +7,24 @@
       </template>
       <template v-slot:item.actions="{ item }">
         <v-btn :disabled="item.raw.status === TraderStatus.TAKEN || item.raw.status === TraderStatus.HIRED" size="small"
-               class="me-2" @click="fundTrader(item.raw)">
+          class="me-2" @click="fundTrader(item.raw)">
           Fund
         </v-btn>
       </template>
     </v-data-table>
 
-    <FundTraderDialog :trader="editedItem" :dialog="dialog" @close="closeDialog" @fundTrader="saveFundTrader"/>
+    <FundTraderDialog :trader="editedItem" :dialog="dialog" @close="closeDialog" @fundTrader="saveFundTrader" />
   </v-container>
 </template>
 
 <script lang="ts">
-import {ref} from "vue";
+import { ref } from "vue";
 import FundTraderDialog from "@/components/FundTraderDialog.vue";
-import {TraderStatus} from "../../enum";
-import {useWalletStore} from "@/store/wallet";
-import {storeToRefs} from "pinia";
-import {useAppStore} from "@/store/app";
-import {Trader} from "../../types";
+import { TraderStatus } from "../../enum";
+import { useWalletStore } from "@/store/wallet";
+import { storeToRefs } from "pinia";
+import { useAppStore } from "@/store/app";
+import { Trader } from "../../types";
 
 export default {
   name: "delegate",
@@ -33,7 +33,7 @@ export default {
       return TraderStatus
     }
   },
-  components: {FundTraderDialog},
+  components: { FundTraderDialog },
   setup() {
     const headers = [
       [
@@ -83,7 +83,7 @@ export default {
       ]
     ];
     const appStore = useAppStore()
-    const {traders} = storeToRefs(appStore);
+    const { traders } = storeToRefs(appStore);
     const dialog = ref<boolean>(false);
     let editedItem = ref<Trader>({} as Trader);
 
@@ -99,12 +99,12 @@ export default {
     };
 
     const saveFundTrader = () => {
-      walletStore.submitTransaction().then(() => {
+      walletStore.createContract().then(() => {
         appStore.hireTrader(editedItem.value)
         dialog.value = false
       })
     };
-    return {headers, traders, fundTrader, dialog, editedItem, closeDialog, saveFundTrader}
+    return { headers, traders, fundTrader, dialog, editedItem, closeDialog, saveFundTrader }
   }
 }
 </script>

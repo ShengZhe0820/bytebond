@@ -27,7 +27,7 @@ export const useAppStore = defineStore('app', {
       trader.status = TraderStatus.HIRED
       this.agreements.push({
         'tA': trader.tA,
-        'cA': '0xadkj4kfgoecwes1f',
+        'cA': '0.0.14973815',
         'uPL': "0%",
         'rPL': "0%",
         'nT': 0,
