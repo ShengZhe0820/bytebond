@@ -12,4 +12,5 @@ npm run dev
 ## contracts
 This folder contains the ``Solidity smart contracts`` that govern the interaction between traders and funders on our platform. These contracts dictate the rules for contract creation, fund allocation, daily trading limits, and more. To facilitate contract testing and simplify the development process, we've also included scripts to create a Hedera testnet client. Please note that these scripts are primarily intended for ``testing purposes`` and do not require a wallet to interact with the contracts.
 
-
+# Project description
+for detailed project description, please go to [here](https://coda.io/d/Beyond-Hackathon-2023_dx-yAxuqkGF/Submission_suGNC#_luqMt).
