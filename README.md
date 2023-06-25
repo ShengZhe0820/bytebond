@@ -1,16 +1,15 @@
-# bytebond
-The Protocol Powering Crypto Trading Programmes
-
-# contracts
-## Environment Setup 
-https://docs.hedera.com/hedera/getting-started/environment-set-up 
-
-## .env file
+# BlockTradeLabs
+### The Protocol Powering Crypto Trading Programmes
+This repository is part of the BlockTradeLabs project, a unique platform enabling funders to invest in traders and traders to trade on behalf of funders, utilizing the benefits of the Hedera network.
+The repository is structured into two main components:
+## blocktradelabs-web
+This is the front-end of our application, built using Vue.js. It provides an intuitive interface for users to interact with our platform, offering features like user registration, trader evaluation, contract creation, and more. 
+To run:
 ```
-//Example
-
-MY_ACCOUNT_ID=0.0.14022919
-MY_PRIVATE_KEY=3030020100300706052b8104000a04220420d4720f988d3fd694a7d9922be67c1a3878eb9915d1c24c6dd8b1f35fe45cc6a1
-
-SAUCER_CONTRACT_ID = 0.0.3395896
+npm install
+npm run dev
 ```
+## contracts
+This folder contains the ``Solidity smart contracts`` that govern the interaction between traders and funders on our platform. These contracts dictate the rules for contract creation, fund allocation, daily trading limits, and more. To facilitate contract testing and simplify the development process, we've also included scripts to create a Hedera testnet client. Please note that these scripts are primarily intended for ``testing purposes`` and do not require a wallet to interact with the contracts.
+
+
