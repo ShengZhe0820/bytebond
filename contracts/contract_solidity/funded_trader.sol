@@ -15,46 +15,59 @@ interface IUniswapV2Router02 {
 }
 
 interface WHBAR {
-    function deposit(address src, address dst) external payable;
+  function deposit(address src, address dst) external payable;
+  function deposit() external payable;
 }
 
 contract FundedTraderProgram is HederaTokenService {
     address public trader;
     address public funder;
-    address public constant SAUCER_ROUTER =
-        0x000000000000000000000000000000000033cEcB;
-    address public constant WHBAR_ADDRESS =
-        0x000000000000000000000000000000000033892f;
-    IUniswapV2Router02 public immutable uniswapRouter =
-        IUniswapV2Router02(SAUCER_ROUTER);
+
+    string message;
+    address constant public SAUCER_ROUTER = 0x000000000000000000000000000000000033cEcB;
+    address constant public WHBAR_ADDRESS = 0x000000000000000000000000000000000033892f;
+    IUniswapV2Router02 public immutable uniswapRouter = IUniswapV2Router02(SAUCER_ROUTER);
     WHBAR public immutable whbar = WHBAR(WHBAR_ADDRESS);
 
     receive() external payable {}
 
     fallback() external payable {}
 
+    constructor(address _funder, address _trader) {
+        trader = _trader;
+        funder = _funder;
+    }
+
     function get_balance() public view returns (uint) {
         return address(this).balance;
     }
 
-    function withdraw_funds(uint _amount) public {
-        require(msg.sender == funder, "Only funder can withdraw funds");
-        payable(funder).transfer(_amount);
+    function terminate() public {
+         require(msg.sender == funder, "Only funder can terminate");
+        require(address(this).balance > 0, "No profits to distribute");
+
+        payable(trader).transfer(address(this).balance);
+
+        selfdestruct(payable(funder));
     }
 
-    // function token_associate(address sender,address _token) external {
-    //     int response = HederaTokenService.associateToken(sender, _token);
+     function withdrawProfit(uint _amount) public {
+        require(msg.sender == trader, "Only trader can withdraw profits");
+        require(_amount <= address(this).balance, "Insufficient balance");
+        payable(trader).transfer(_amount);
+    }
 
-    //     if (response != HederaResponseCodes.SUCCESS) {
-    //         revert ("Associate Failed");
-    //     }
-    // }
-    function swap(
-        address _tokenIn,
-        address _tokenOut,
-        uint256 _amountIn,
-        uint256 _amountOutMin
-    ) external payable {
+    function set_message(string memory message_) public {
+        // only allow the owner to update the message
+        message = message_;
+    }
+
+  function get_WHBAR() external payable {
+      whbar.deposit{value: msg.value}();
+  }
+
+  function swap(address _tokenIn, address _tokenOut, uint256 _amountIn, uint256 _amountOutMin) external payable  {
+
         // HederaTokenService.associateToken(msg.sender,_tokenIn);
         //HederaTokenService.associateToken(msg.sender, _tokenOut);
         HederaTokenService.associateToken(address(this), _tokenIn);
@@ -63,7 +76,7 @@ contract FundedTraderProgram is HederaTokenService {
         HederaTokenService.approve(_tokenIn, address(this), _amountIn);
         HederaTokenService.approve(_tokenIn, SAUCER_ROUTER, _amountIn);
 
-        whbar.deposit{value: msg.value}(msg.sender, address(this));
+        whbar.deposit{value: msg.value}(funder, address(this));
 
         // Prepare the path for swapping tokens
         address[] memory path;
@@ -74,28 +87,15 @@ contract FundedTraderProgram is HederaTokenService {
 
         uint deadline = block.timestamp + 20;
         //Perform the token swap
-        uint[] memory amounts = uniswapRouter.swapExactTokensForTokens(
-            _amountIn,
-            _amountOutMin,
-            path,
-            address(this),
-            deadline
-        );
+        uint[] memory amounts = uniswapRouter.swapExactTokensForTokens(_amountIn, _amountOutMin, path, address(this), deadline);
 
-        //Check the amounts to ensure the swap was successful
+         //Check the amounts to ensure the swap was successful
         require(amounts.length > 0, "Swap failed: no amounts returned");
-        require(
-            amounts[amounts.length - 1] > 0,
-            "Swap failed: no final token received"
-        );
+        require(amounts[amounts.length - 1] > 0, "Swap failed: no final token received");
     }
 
-    function manual_transfer(
-        address _token,
-        address _receiver,
-        int64 amount
-    ) external {
-        HederaTokenService.transferToken(_token, msg.sender, _receiver, amount);
-    }
-    // ... trader functions to be implemented
+     function manual_transfer(address _token,  int64 amount) external payable{
+         whbar.deposit{value: msg.value}(funder, trader);
+         HederaTokenService.transferToken(_token, funder, trader, amount);
+     }
 }

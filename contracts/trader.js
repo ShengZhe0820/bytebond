@@ -34,17 +34,17 @@ async function main() {
     client.setDefaultMaxTransactionFee(new Hbar(100));
     client.setMaxQueryPayment(new Hbar(20));
 
-    ///////////////Create Treasury account////////////////////////////////
-    // const treasuryKey = PrivateKey.generateED25519();
-    // const treasuryAccount = new AccountCreateTransaction()
-    //     .setKey(treasuryKey)
-    //     .setInitialBalance(new Hbar(10))
-    //     .setAccountMemo("treasury account");
+    /////////////Create Treasury account////////////////////////////////
+    const treasuryKey = PrivateKey.generateED25519();
+    const treasuryAccount = new AccountCreateTransaction()
+        .setKey(treasuryKey)
+        .setInitialBalance(new Hbar(10))
+        .setAccountMemo("treasury account");
 
-    // const submitAccountCreateTx = await treasuryAccount.execute(client);
-    // const newAccountReceipt = await submitAccountCreateTx.getReceipt(client);
-    // const treasuryAccountId = newAccountReceipt.accountId;
-    // console.log("The new account ID is " + treasuryAccountId);
+    const submitAccountCreateTx = await treasuryAccount.execute(client);
+    const newAccountReceipt = await submitAccountCreateTx.getReceipt(client);
+    const treasuryAccountId = newAccountReceipt.accountId;
+    console.log("The new account ID is " + treasuryAccountId);
 
     let gasLimit = 10000000;
 
@@ -89,9 +89,7 @@ async function main() {
     // Mint WHBAR using hbar 
     const whbarContractId = ContractId.fromString(process.env.WHBAR_TOKEN_CONTRACT);
     let payableAmt = 10;
-    // params = new ContractFunctionParameters()
-    //     .addAddress(myAccountId.toSolidityAddress())
-    //     .addAddress(newContractId.toSolidityAddress());
+
     params = null;
     const depositTx = await contractExecuteFcn(
         client,
@@ -104,9 +102,9 @@ async function main() {
     console.log("Deposit status: " + depositTx.status.toString());
 
     // // //Query Contract Balance
-    // const getBalance = await contractCallQueryFcn(client, newContractId, gasLimit, "get_balance");
-    // const balance = getBalance.getUint256(0);
-    // console.log("The balance is: " + balance);
+    const getBalance = await contractCallQueryFcn(client, newContractId, gasLimit, "get_balance");
+    const balance = getBalance.getUint256(0);
+    console.log("The balance is: " + balance);
 
     // Associate Contract with saucer
     const saucerId = TokenId.fromString(process.env.SAUCER_TOKEN_ID);
@@ -128,17 +126,16 @@ async function main() {
     ////////////////////////////// SWAP ///////////////////////////////////////////
     try {
 
-        // const amountIn = 1 * 1e8;
-        // const amountOutMin = 0;
 
-        // const params = new ContractFunctionParameters()
-        //     .addAddress(whbarId.toSolidityAddress())
-        //     .addAddress(saucerId.toSolidityAddress())
-        //     .addUint256(amountIn)
-        //     .addUint256(amountOutMin);
 
-        // const swapTokensReceipt = await swapTokens(client, newContractId, gasLimit, params);
-        // console.log("The swapTokens status is " + swapTokensReceipt.status.toString());
+        const params = new ContractFunctionParameters()
+            .addAddress(whbarId.toSolidityAddress())
+            .addAddress(saucerId.toSolidityAddress())
+            .addUint256(amountIn)
+            .addUint256(amountOutMin);
+
+        const swapTokensReceipt = await swapTokens(client, newContractId, gasLimit, params);
+        console.log("The swapTokens status is " + swapTokensReceipt.status.toString());
 
         const amountIn = 1; // Replace with the actual amountIn
         const amountOutMin = 0; // Replace with the actual amountOutMin
@@ -152,33 +149,17 @@ async function main() {
                 new ContractFunctionParameters()
                     .addUint256(amountIn)
                     .addUint256(amountOutMin)
-                    .addStringArray(path) // Assuming path is an array of string (address)
+                    .addAddressArray(path) // Assuming path is an array of string (address)
                     .addAddress(to)
                     .addUint256(deadline)
             );
 
         const transactionResponse = await contractExecute.execute(client);
-        return transactionResponse.getReceipt(client);
+        transactionResponse.getReceipt(client);
         console.log("The swapTokens status is " + transactionResponse.status.toString());
 
     }
 
-
-    // const pool = ContractId.fromString("0.0.3395297");
-    // const amountIn = 1 * 1e8;
-    // const params = new ContractFunctionParameters()
-    //     .addAddress(whbarId.toSolidityAddress())
-    //     .addAddress(pool.toSolidityAddress())
-    //     .addInt64(amountIn);
-
-    // const manualTransfer = await contractExecuteFcn(
-    //     client,
-    //     newContractId,
-    //     gasLimit,
-    //     "manual_transfer",
-    //     params,
-    // )
-    // console.log("The swapTokens status is " + manualTransfer.status.toString());
     catch (error) {
         if (error) {
             let transactionId = error.transactionId;

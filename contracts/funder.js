@@ -35,31 +35,29 @@ async function main() {
     // ///////////////////// Deploy Contract /////////////////////////////////////////////////////
 
     // //Import the compiled contract from the HelloHedera.json file
-    // let fundedTrader = require("./contract_json/fundedTrader.json")
-    // const bytecode = fundedTrader.data.bytecode.object;
+    let fundedTrader = require("./contract_json/fundedTrader.json")
+    const bytecode = fundedTrader.data.bytecode.object;
 
-    // //Create the transaction
-    // const contractCreate = new ContractCreateFlow()
-    //     .setGas(gasLimit)
-    //     .setBytecode(bytecode)
-    //     .setConstructorParameters(
-    //         new ContractFunctionParameters()
-    //             .addAddress(myAccountId.toSolidityAddress())
-    //     );
+    //Create the transaction
+    const contractCreate = new ContractCreateFlow()
+        .setGas(gasLimit)
+        .setBytecode(bytecode)
+        .setConstructorParameters(
+            new ContractFunctionParameters()
+                .addAddress(myAccountId.toSolidityAddress())
+        );
 
-    // //Sign the transaction with the client operator key and submit to a Hedera network
-    // const txResponse = contractCreate.execute(client);
+    //Sign the transaction with the client operator key and submit to a Hedera network
+    const txResponse = contractCreate.execute(client);
 
-    // //Get the receipt of the transaction
-    // const receipt = (await txResponse).getReceipt(client);
+    //Get the receipt of the transaction
+    const receipt = (await txResponse).getReceipt(client);
 
-    // //Get the new contract ID
-    // const newContractId = (await receipt).contractId;
-    // console.log("The new contract ID is " + newContractId);
+    //Get the new contract ID
+    const newContractId = (await receipt).contractId;
+    console.log("The new contract ID is " + newContractId);
 
     // ///////////////////////////Deposit Fund to Contract/////////////////////////////////////////////////////////
-    const newContractId = "0.0.14959448";
-
     let payableAmt = 1;
     const deposit = await contractExecuteNoFcn(client, newContractId, gasLimit, payableAmt);
     console.log("The deposit status is " + deposit.status.toString());
