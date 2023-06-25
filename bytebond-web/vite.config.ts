@@ -5,10 +5,11 @@ import vuetify, {transformAssetUrls} from 'vite-plugin-vuetify'
 // Utilities
 import {defineConfig} from 'vite'
 import {fileURLToPath, URL} from 'node:url'
+import nodePolyfills from "rollup-plugin-node-polyfills";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  define: {'process.env': {}, global: 'globalThis'},
+  define: {'process.env': {}, global: "globalThis",},
   plugins: [
     vue({
       template: {transformAssetUrls}
@@ -18,6 +19,15 @@ export default defineConfig({
       autoImport: true,
     }),
   ],
+  build: {
+    rollupOptions: {
+      plugins: [nodePolyfills() as any],
+    },
+    commonjsOptions: {
+      transformMixedEsModules: true,
+    },
+  },
+
 
   resolve: {
     alias: {
@@ -32,6 +42,14 @@ export default defineConfig({
       '.tsx',
       '.vue',
     ],
+  },
+  optimizeDeps: {
+    esbuildOptions: {
+      // Node.js global to browser globalThis
+      define: {
+        global: 'globalThis',
+      },
+    },
   },
   server: {
     port: 8080,

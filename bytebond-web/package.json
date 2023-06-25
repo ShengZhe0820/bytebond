@@ -6,7 +6,7 @@
     "build": "vue-tsc --noEmit && vite build",
     "preview": "vite preview",
     "lint": "eslint . --fix --ignore-path .gitignore",
-    "start": "node index.js"
+    "start": "vite"
   },
   "dependencies": {
     "@hashgraph/hethers": "^1.2.6",
@@ -31,6 +31,7 @@
     "@vue/eslint-config-typescript": "^11.0.0",
     "eslint": "^8.43.0",
     "eslint-plugin-vue": "^9.15.0",
+    "rollup-plugin-node-polyfills": "^0.2.1",
     "typescript": "^5.0.0",
     "vite": "^4.2.0",
     "vite-plugin-vuetify": "^1.0.0",
