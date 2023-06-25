@@ -2,7 +2,7 @@
 ### The Protocol Powering Crypto Trading Programmes
 This repository is part of the BlockTradeLabs project, a unique platform enabling funders to invest in traders and traders to trade on behalf of funders, utilizing the benefits of the Hedera network.
 The repository is structured into two main components:
-## blocktradelabs-web
+## bytebond-web
 This is the front-end of our application, built using Vue.js. It provides an intuitive interface for users to interact with our platform, offering features like user registration, trader evaluation, contract creation, and more. 
 To run:
 ```
