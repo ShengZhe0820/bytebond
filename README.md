@@ -18,6 +18,7 @@ This folder contains the ``Solidity smart contracts`` that govern the interactio
 // "Safe token transfer router failed!" and "Precompile Error"
 // But the idea of calling trading function from external DEX is implemented
 
+// Please provide your accountID and privateKey in the code
 node traderV2.js
 ```
 
