@@ -15,6 +15,8 @@ const { Client,
     DelegateContractId
 } = require("@hashgraph/sdk");
 require("dotenv").config();
+const { BigNumber } = require("bignumber.js");
+const { hethers } = require('@hashgraph/hethers');
 const { contractExecuteNoFcn, contractCallQueryFcn, contractExecuteFcn, swapTokens, associateToken, approveAllowance } = require('./helper_function/helper');
 
 async function main() {
@@ -41,7 +43,7 @@ async function main() {
 
     // ///////////////////// Deploy Contract /////////////////////////////////////////////////////
 
-    // //Import the compiled contract from the HelloHedera.json file
+    //Import the compiled contract from the HelloHedera.json file
     let fundedTrader = require("./contract_json/fundedTrader.json")
     const bytecode = fundedTrader.data.bytecode.object;
 
@@ -67,23 +69,30 @@ async function main() {
 
     // ///////////////////////////Deposit Fund to Contract/////////////////////////////////////////////////////////
 
+    // We run into precompile errors when trying to call SaucerSwap's swapTokensForExactTokens
+    // functions, we tried calling it directly, but keep encountering 
+    //"Safe token transfer router failed!" and "Precompile Error"
+
     const whbarId = TokenId.fromString(process.env.WHBAR_TOKEN_ID);
     const saucerId = TokenId.fromString(process.env.SAUCER_TOKEN_ID);
 
     try {
-        const amountIn = 1; // Replace with the actual amountIn
-        const amountOutMin = 0; // Replace with the actual amountOutMin
+        const amountIn = new BigNumber(100); // Replace with the actual amountIn
+        const amountOutMin = new BigNumber(1); // Replace with the actual amountOutMin
 
         let params = new ContractFunctionParameters()
             .addAddress(whbarId.toSolidityAddress())
             .addAddress(saucerId.toSolidityAddress())
-            .addUint256(amountIn * 1e8)
+            .addUint256(amountIn)
             .addUint256(amountOutMin);
 
         const swapTokensReceipt = swapTokens(client, myPrivateKey, newContractId, gasLimit, params, amountIn);
         console.log("Swap is ", (await swapTokensReceipt).status.toString());
 
         const saucerRouter = ContractId.fromString(process.env.SAUCER_ROUTER_CONTRACT);
+        const approveAllowanceReceipt = await approveAllowance(client, myPrivateKey, whbarId, myAccountId, saucerRouter, amountIn);
+        console.log("Approval is ", approveAllowanceReceipt.toString());
+
         const path = [whbarId.toSolidityAddress(), saucerId.toSolidityAddress()];
         const to = myAccountId.toSolidityAddress();
         const deadline = Math.floor(Date.now() / 1000 + 60 * 20);
@@ -101,12 +110,6 @@ async function main() {
             ).freezeWith(client);
         const signTx = await contractExecute.sign(myPrivateKey);
         const transactionResponse = await signTx.execute(client);
-        console.log("The swapTokens status is " + transactionResponse.getReceipt(client).status.toString());
-
-        const pool = ContractId.fromString("0.0.3395297");
-
-
-        console.log(transactionResponse);
         console.log("The swapTokens status is " + transactionResponse.getReceipt(client).status.toString());
 
     }
