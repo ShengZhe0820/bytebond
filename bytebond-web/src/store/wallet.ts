@@ -1,8 +1,6 @@
 import {defineStore} from "pinia";
 import {HashConnect, HashConnectTypes, MessageTypes} from 'hashconnect';
-import {ContractExecuteTransaction, FileCreateTransaction, AccountId, ContractId, ContractFunctionParameters} from "@hashgraph/sdk";
-
-global = globalThis
+import {ContractExecuteTransaction, FileCreateTransaction, ContractId, ContractFunctionParameters} from "@hashgraph/sdk";
 
 interface State {
   initData: HashConnectTypes.InitilizationData
